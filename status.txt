@@ -1,0 +1,2 @@
+1. Navbar dropdown in mobile
+3. Mobile optimization

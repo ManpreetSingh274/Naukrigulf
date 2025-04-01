@@ -19,12 +19,15 @@ const data = [
 ];
 
 const deviceBreakpoints = [
-  { device: "mobile", maxWidth: 640, scale: 0.6 },
-  { device: "small-tablet", maxWidth: 768, scale: 0.75 },
-  { device: "medium-tablet", maxWidth: 834, scale: 0.85 }, 
-  { device: "large-tablet", maxWidth: 1024, scale: 0.9 },
-  { device: "nest-hub", maxWidth: 1024, scale: 0.85 },
-  { device: "nest-hub-max", maxWidth: 1280, scale: 0.9 },
+  { device: "ultra-narrow-mobile", maxWidth: 320, scale: 0.5 },
+  { device: "narrow-mobile", maxWidth: 375, scale: 0.65 },
+  { device: "samsung-a23", maxWidth: 415, scale: 0.75 },  
+  { device: "mobile", maxWidth: 640, scale: 0.8 },
+  { device: "small-tablet", maxWidth: 768, scale: 0.85 },
+  { device: "medium-tablet", maxWidth: 834, scale: 0.9 }, 
+  { device: "large-tablet", maxWidth: 1024, scale: 0.95 },
+  { device: "nest-hub", maxWidth: 1024, scale: 0.9 },
+  { device: "nest-hub-max", maxWidth: 1280, scale: 0.95 },
   { device: "desktop", maxWidth: Infinity, scale: 1 }
 ];
 
@@ -47,27 +50,23 @@ const CountryIcons = ({ country }: { country: string }) => {
       const height = window.innerHeight;
       setScreenWidth(width);
       
-      if (width <= 320) {
+      if (width >= 410 && width <= 415) {
+        setContainerScale(0.75);
+        setCurrentDevice("samsung-a23");
+      }
+      else if (width <= 320) {
         setContainerScale(0.5);
         setCurrentDevice("ultra-narrow-mobile");
       } else if (width <= 375) {
-        setContainerScale(0.75);
+        setContainerScale(0.65);
         setCurrentDevice("narrow-mobile");
       }
-      else if(width===414){
-        setContainerScale(0.9);
-        setCurrentDevice("iphone-xr")
-      }
-      else if(width===412){
-        setContainerScale(0.85);
-        setCurrentDevice("iphone-xr")
-      }
-      else if(width===430){
-        setContainerScale(0.9);
-        setCurrentDevice("iphone-xr")
+      else if (width === 414 || width === 430) {
+        setContainerScale(0.8);
+        setCurrentDevice("iphone-xr");
       }
       else if (width === 717 && height === 512) {
-        setContainerScale(0.65);
+        setContainerScale(0.7);
         setCurrentDevice("fold-unfolded");
       }
       else if (width === 1024 && height === 600) {
@@ -83,6 +82,7 @@ const CountryIcons = ({ country }: { country: string }) => {
         setContainerScale(0.85);
         setCurrentDevice("medium-tablet");
       } else {
+        // Use the breakpoints array for other devices
         for (const bp of deviceBreakpoints) {
           if (width < bp.maxWidth) {
             setContainerScale(bp.scale);
@@ -103,6 +103,10 @@ const CountryIcons = ({ country }: { country: string }) => {
       return "left-[70%] transform -translate-x-1/2";
     }
     
+    if (currentDevice === "samsung-a23") {
+      return "left-[68%] transform -translate-x-1/2 top-[55%]";
+    }
+    
     if (currentDevice === "nest-hub" || currentDevice === "nest-hub-max") {
       return "left-[70%] transform -translate-x-1/2";
     } else if (currentDevice.includes("tablet")) {
@@ -113,6 +117,10 @@ const CountryIcons = ({ country }: { country: string }) => {
   };
 
   const getBottomLineWidth = () => {
+    if (currentDevice === "samsung-a23") {
+      return "w-[108%] -ml-4";
+    }
+    
     if (currentDevice === "ultra-narrow-mobile") {
       return "w-[125%] -ml-8";
     } else if (currentDevice === "narrow-mobile") {
@@ -128,12 +136,19 @@ const CountryIcons = ({ country }: { country: string }) => {
       return "w-[100%]";
     } else if (currentDevice.includes("tablet")) {
       return "w-[104%] -ml-4";
-    }
-     else if (currentDevice.includes("iphone-xr")) {
+    } else if (currentDevice.includes("iphone-xr")) {
       return "w-[102%] -ml-2";
     }
     
     return "w-full";
+  };
+
+  const getIconScale = () => {
+    if (currentDevice === "samsung-a23") {
+      return "scale-[0.65] sm:scale-[0.7] md:scale-[0.8] lg:scale-100";
+    }
+    
+    return "scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-100";
   };
 
   return (
@@ -152,7 +167,7 @@ const CountryIcons = ({ country }: { country: string }) => {
           {data.map((ele, i) => (
             <div
               key={i}
-              className={`group transition-all duration-200 scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-100 origin-bottom-left ${ele.ml} hover:scale-110 hover:relative hover:z-50 ${selected === ele.name ? "selected relative z-40" : ""}`}
+              className={`group transition-all duration-200 ${getIconScale()} origin-bottom-left ${ele.ml} hover:scale-110 hover:relative hover:z-50 ${selected === ele.name ? "selected relative z-40" : ""}`}
               onMouseEnter={() => setDisplay(ele.name)}
               onMouseLeave={() => setDisplay(selected)}
               onClick={() => router.push(ele.link)}
@@ -200,6 +215,13 @@ const CountryIcons = ({ country }: { country: string }) => {
         @media (min-width: 1024px) and (max-width: 1280px) {
           .group svg {
             max-width: 100%;
+            height: auto;
+          }
+        }
+        
+        @media (width: 412px) {
+          .group svg {
+            max-width: 95%;
             height: auto;
           }
         }
